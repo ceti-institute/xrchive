@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Add a default marker to a web map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"
+        integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY2V0aWluc3RpdHV0ZSIsImEiOiJjbDRoaTljdWkwMTNpM2lwa2V0cXlxZWJ1In0.pz6fNrcbH-fYWUVjZXwMdg';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-122.674195, 45.520247],
+            zoom: 12
+        });
+
+        fetch('locations.csv')
+            .then(response => response.text())
+            .then(csv => {
+                let csvData = Papa.parse(csv, { header: true });
+                console.log(csvData);
+                for (let i = 0; i < csvData.data.length; i++) {
+                    let location = csvData.data[i];
+
+                    if (location.Latitude != "" && location.Longitude != "") {
+                        const popup = new mapboxgl.Popup({ offset: 25 }).setText(
+                            location.Title
+                        );
+                        let marker = new mapboxgl.Marker()
+                            .setLngLat([location.Longitude, location.Latitude])
+                            .setPopup(popup)
+                            .addTo(map);
+                    }
+                }
+            });
+
+    </script>
+</body>
+
+</html>
